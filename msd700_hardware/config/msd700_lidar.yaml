@@ -5,4 +5,4 @@ rplidar_config:
   inverted: false
   angle_compensate: true
   scan_mode: "Standard"
-  max_distance: 12.0
+  max_distance: 10.0

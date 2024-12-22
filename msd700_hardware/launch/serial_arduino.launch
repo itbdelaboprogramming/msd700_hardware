@@ -7,4 +7,8 @@
         <param name="port" value="$(arg port)"/>
         <param name="baud" value="$(arg baud)"/>
     </node>
+
+    <!-- Hardware State Parser -->
+    <node pkg="msd700_hardware" type="hardware_state_node.py" name="hardware_state_node" output="screen"></node>
+
 </launch>
