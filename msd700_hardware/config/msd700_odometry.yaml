@@ -1,0 +1,7 @@
+msd700_odom:
+  wheel_radius    : 2.75  # cm 
+  wheel_distance  : 23.0  # cm
+  ppr             : 100   # Pulse per Rotation
+  compute_period  : 10    # ms
+  odom_frame      : odom
+  robot_frame     : base_footprint

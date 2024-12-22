@@ -1,0 +1,9 @@
+<launch>
+    <!-- Load odometry parameters -->
+    <rosparam command="load" file="$(find msd700_hardware)/config/msd700_odometry.yaml" />
+
+    <!-- Launch odometry node -->
+    <node pkg="msd700_hardware" type="odom_node.py" name="odom_node" output="screen">
+        <rosparam param="/msd700_odom" />
+    </node>
+</launch>

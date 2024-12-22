@@ -1,0 +1,9 @@
+<launch>
+    <!-- Load lidar parameters -->
+    <rosparam command="load" file="$(find msd700_hardware)/config/msd700_lidar.yaml" />
+
+    <!-- Launch RPLIDAR node -->
+    <node pkg="rplidar_ros" type="rplidarNode" name="rplidarNode" output="screen">
+        <rosparam param="/rplidar_config" />
+    </node>
+</launch>

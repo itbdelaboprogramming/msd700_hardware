@@ -1,0 +1,10 @@
+<launch>
+    <!-- Serial Communication with Firmware (Arduino) -->
+    <include file="$(find msd700_hardware)/launch/serial_arduino.launch"/>
+
+    <!-- RPLidar A1 -->
+    <include file="$(find msd700_hardware)/launch/lidar_scanner.launch"/>
+
+    <!-- Odometry -->
+    <include file="$(find msd700_hardware)/launch/odometry.launch"/>
+</launch>
