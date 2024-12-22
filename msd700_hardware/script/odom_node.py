@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # --- odom_node.py ---
 # Publishes odometry data (topic and tf) from motor pulses and IMU data
 
@@ -20,19 +21,22 @@ class OdomNode:
         self.odom_broadcaster   = tf.TransformBroadcaster()
 
         # Subscriber
-        self.imu_sub            = rospy.Subscribe('/imu/data', Imu, self.imu_callback)
-        self.motor_pulse_sub    = rospy.Subscribe('/hardware/motor_pulse', Float32MultiArray, self.motor_pulse_callback)
+        self.imu_sub            = rospy.Subscriber('/imu/data', Imu, self.imu_callback)
+        self.motor_pulse_sub    = rospy.Subscriber('/hardware/motor_pulse', Float32MultiArray, self.motor_pulse_callback)
 
         # Parameters
-        self.compute_period     = rospy.get_param('compute_period', 30)     # ms
-        self.encoder_ppr        = rospy.get_param('encoder_ppr', 1024)      # ppr
-        self.wheel_distance     = rospy.get_param('wheel_distance', 0.23)   # meter
-        self.wheel_distance     = rospy.get_param('wheel_radius', 0.23)     # meter
-        self.use_imu            = rospy.get_param('use_imu', True)
-        self.debug              = rospy.get_param('debug', False)
+        self.compute_period     = rospy.get_param('msd700_odom/compute_period', 30)     # ms
+        self.encoder_ppr        = rospy.get_param('msd700_odom/encoder_ppr', 1024)      # ppr
+        self.wheel_distance     = rospy.get_param('msd700_odom/wheel_distance', 230)/100   # cm
+        self.wheel_radius       = rospy.get_param('msd700_odom/wheel_radius', 23)/100     # cm
+        self.use_imu            = rospy.get_param('msd700_odom/use_imu', True)
+        self.debug              = rospy.get_param('msd700_odom/debug', False)
 
         # Variables
         # Odometry data
+        self.x = 0.0
+        self.y = 0.0
+        self.theta = 0.0
         self.linear_velocity = 0.0
         self.angular_velocity = 0.0
         # Motor Pulses
@@ -66,6 +70,9 @@ class OdomNode:
         # Reference:
         # - https://medium.com/@nahmed3536/wheel-odometry-model-for-differential-drive-robotics-91b85a012299
         
+        if self.last_time is None:
+            self.last_time = rospy.Time.now()
+            return
         current_time = rospy.Time.now()
         dt = (current_time - self.last_time).to_sec()
         self.last_time = current_time
@@ -89,10 +96,10 @@ class OdomNode:
 
         # Debug
         if self.debug:
-            rospy.loginfo(f"---")
-            rospy.loginfo(f'dt: {dt}s, d: {d}m, dtheta: {dtheta}m')
-            rospy.loginfo(f'x: {self.x}, y: {self.y}, theta: {self.theta}')
-            rospy.loginfo(f"---")
+            rospy.loginfo(f"")
+            rospy.loginfo(f'dt: {dt:.3f}, d: {d:.3f}, dtheta: {dtheta:.3f}')
+            rospy.loginfo(f'x: {self.x:.3f}, y: {self.y:.3f}, theta: {self.theta:.3f}')
+            rospy.loginfo(f"")
     
 if __name__ == '__main__':
     rospy.init_node('odom_node')

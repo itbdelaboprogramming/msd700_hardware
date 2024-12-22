@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # --- hardware_state_parser.py ---
 # Parse the HardwareState msg and publish the datas
 
@@ -14,8 +15,6 @@ from std_msgs.msg import Float32MultiArray
 
 class HardwareStateParser:
     def __init__(self) -> None:
-        rospy.init_node('hardware_state_parser')
-
         # Variables
         self.right_motor_pulse_delta = 0.0
         self.left_motor_pulse_delta = 0.0
@@ -24,12 +23,19 @@ class HardwareStateParser:
         self.gyro_x, self.gyro_y, self.gyro_z = 0.0, 0.0, 0.0
         self.mag_x, self.mag_y, self.mag_z = 0.0, 0.0, 0.0
 
+        self.az_offset = 0.0
+
         # Publisher
-        self.imu_raw_pub        = rospy.Publisher('/imu/data_raw'           , Imu               , queue_size=1)
-        self.mag_pub            = rospy.Publisher('/imu/mag'                , MagneticField     , queue_size=1)
-        self.motor_pulse_pub    = rospy.Publisher('/hardware/motor_pulse'   , Float32MultiArray , queue_size=1)
+        self.imu_raw_pub        = rospy.Publisher('/imu/data_raw'           , Imu               , queue_size=10)
+        self.mag_pub            = rospy.Publisher('/imu/mag'                , MagneticField     , queue_size=10)
+        self.motor_pulse_pub    = rospy.Publisher('/hardware/motor_pulse'   , Float32MultiArray , queue_size=10)
+
+        # Subscriber
+        self.hardware_state_sub = rospy.Subscriber('/hardware_state', HardwareState, self.hardware_state_callback, queue_size=10)
 
     def hardware_state_callback(self, msg: HardwareState) -> None:
+        rospy.loginfo("hardware state received")
+
         # Update raw values
         self.right_motor_pulse_delta = msg.right_motor_pulse_delta
         self.left_motor_pulse_delta = msg.left_motor_pulse_delta
@@ -48,6 +54,13 @@ class HardwareStateParser:
         self.mag_x = msg.mag_x / 1e6
         self.mag_y = msg.mag_y / 1e6
         self.mag_z = msg.mag_z / 1e6
+
+        # Publish
+        self.publish_imu_raw(self.roll, self.pitch, self.yaw
+                            , self.acc_x, self.acc_y, self.acc_z
+                            , self.gyr_x, self.gyr_y, self.gyr_z)
+        self.publish_mag(self.mag_x, self.mag_y, self.mag_z)
+        self.publish_motor_pulse(self.right_motor_pulse_delta, self.left_motor_pulse_delta)
 
     def publish_imu_raw(self, roll: float, pitch: float, yaw: float
                         , acc_x: float, acc_y: float, acc_z: float
@@ -75,3 +88,4 @@ class HardwareStateParser:
 if __name__ == '__main__':
     rospy.init_node("hardware_state_parser", anonymous=True)
     HardwareStateParser()
+    rospy.spin()
