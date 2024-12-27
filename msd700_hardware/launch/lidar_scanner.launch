@@ -1,4 +1,6 @@
 <launch>
+    <arg name="frame_id" default="base_link" />
+
     <!-- Load lidar parameters -->
     <rosparam command="load" file="$(find msd700_hardware)/config/msd700_lidar.yaml" />
 
@@ -7,7 +9,7 @@
         <param name="serial_port" value="/dev/rplidar" />
         <param name="serial_baudrate" value="115200" />
         <param name="angle_compensate" value="True" />
-        <param name="frame_id" value="base_scan" />
+        <param name="frame_id" value="$(arg frame_id)" />
         <param name="inverted" value="False" />
         <param name="max_distance" value="10.0" />
         <param name="scan_mode" value="Standard" />

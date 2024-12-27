@@ -15,6 +15,11 @@ from std_msgs.msg import Float32MultiArray
 
 class HardwareStateParser:
     def __init__(self) -> None:
+        # Parameters
+        self.az_offset = rospy.get_param('msd700_hardware/az_offset', 0.0)
+        self.frame_id = rospy.get_param('msd700_hardware/frame_id', 'base_link')
+        self.debug = rospy.get_param('msd700_hardware/debug', False)
+
         # Variables
         self.right_motor_pulse_delta = 0.0
         self.left_motor_pulse_delta = 0.0
@@ -34,7 +39,8 @@ class HardwareStateParser:
         self.hardware_state_sub = rospy.Subscriber('/hardware_state', HardwareState, self.hardware_state_callback, queue_size=10)
 
     def hardware_state_callback(self, msg: HardwareState) -> None:
-        rospy.loginfo("hardware state received")
+        if self.debug:
+            rospy.loginfo("hardware state received")
 
         # Update raw values
         self.right_motor_pulse_delta = msg.right_motor_pulse_delta
@@ -67,16 +73,21 @@ class HardwareStateParser:
                         , gyr_x: float, gyr_y: float, gyr_z: float) -> None:
         imu_raw_msg = Imu()
         imu_raw_msg.header.stamp = rospy.Time.now()
-        imu_raw_msg.header.frame_id = 'imu_raw'
+        imu_raw_msg.header.frame_id = self.frame_id
+
         imu_raw_msg.orientation = Quaternion(*tf.transformations.quaternion_from_euler(roll, pitch, yaw))
         imu_raw_msg.angular_velocity = Vector3(gyr_x, gyr_y, gyr_z)
         imu_raw_msg.linear_acceleration = Vector3(acc_x, acc_y, acc_z)
+
+        imu_raw_msg.orientation_covariance = [0.01, 0, 0, 0, 0.01, 0, 0, 0, 0.01]
+        imu_raw_msg.angular_velocity_covariance = [0.01, 0, 0, 0, 0.01, 0, 0, 0, 0.01]
+        imu_raw_msg.linear_acceleration_covariance = [0.01, 0, 0, 0, 0.01, 0, 0, 0, 0.01]
         self.imu_raw_pub.publish(imu_raw_msg)
     
     def publish_mag(self, mag_x: float, mag_y: float, mag_z: float) -> None:
         mag_msg = MagneticField()
         mag_msg.header.stamp = rospy.Time.now()
-        mag_msg.header.frame_id = 'magnetometer'
+        mag_msg.header.frame_id = self.frame_id
         mag_msg.magnetic_field = Vector3(mag_x, mag_y, mag_z)
         self.mag_pub.publish(mag_msg)
     

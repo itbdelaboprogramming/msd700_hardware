@@ -21,12 +21,15 @@ class OdomNode:
         self.odom_broadcaster   = tf.TransformBroadcaster()
 
         # Subscriber
-        self.imu_sub            = rospy.Subscriber('/imu/data', Imu, self.imu_callback)
+        self.imu_sub            = rospy.Subscriber('/imu/data_raw', Imu, self.imu_callback)
         self.motor_pulse_sub    = rospy.Subscriber('/hardware/motor_pulse', Float32MultiArray, self.motor_pulse_callback)
+
+        # Publisher
+        self.pose_pub = rospy.Publisher('/hardware/pose', PoseStamped, queue_size=1)
 
         # Parameters
         self.compute_period     = rospy.get_param('msd700_odom/compute_period', 30)     # ms
-        self.encoder_ppr        = rospy.get_param('msd700_odom/encoder_ppr', 1024)      # ppr
+        self.encoder_ppr        = rospy.get_param('msd700_odom/encoder_ppr', 12)      # ppr
         self.wheel_distance     = rospy.get_param('msd700_odom/wheel_distance', 230)/100   # cm
         self.wheel_radius       = rospy.get_param('msd700_odom/wheel_radius', 23)/100     # cm
         self.use_imu            = rospy.get_param('msd700_odom/use_imu', True)
@@ -43,20 +46,20 @@ class OdomNode:
         self.right_motor_pulse_delta = 0.0
         self.left_motor_pulse_delta = 0.0
         # IMU data
-        self.rpy = [0.0, 0.0, 0.0]
+        self.acc = [0.0, 0.0, 0.0]
         self.gyro = [0.0, 0.0, 0.0]
+        self.rpy = [0.0, 0.0, 0.0]
         # Timing
         self.last_time = None
+        self.last_debug = rospy.Time.now()
 
         rospy.Timer(rospy.Duration(self.compute_period/1000), self.update_odom)
 
     # --- Sensor Callbacks ---
     def imu_callback(self, msg: Imu) -> None:
         # -- IMU DATA --
-        # Get roll pitch yaw
-        ort_q = [msg.orientation.x, msg.orientation.y, msg.orientation.z, msg.orientation.w]
-        roll, pitch, yaw = tf.transformations.euler_from_quaternion(ort_q)
-        self.rpy = [roll, pitch, yaw]
+        # Get acc
+        self.acc = [msg.linear_acceleration.x, msg.linear_acceleration.y, msg.linear_acceleration.z]
 
         # Get gyro
         self.gyro = [msg.angular_velocity.x, msg.angular_velocity.y, msg.angular_velocity.z]
@@ -89,17 +92,53 @@ class OdomNode:
         # Update pose
         self.x += d * np.cos(self.theta)
         self.y += d * np.sin(self.theta)
-        self.theta += dtheta
 
         if self.use_imu:
+            # Acceleration-based tilt estimation (pitch and roll)
+            accel_pitch = np.arctan2(-self.acc[0], np.sqrt(self.acc[1]**2 + self.acc[2]**2))
+            accel_roll = np.arctan2(self.acc[1], self.acc[2])
+
+            # Gyroscope integration
+            gyro_pitch = self.rpy[1] + self.gyro[0] * dt
+            gyro_roll = self.rpy[0] + self.gyro[1] * dt
+            gyro_yaw = self.rpy[2] + self.gyro[2] * dt
+
+            # Complementary filter: 0.98 factor
+            self.rpy[0] = 0.98 * gyro_roll + 0.02 * accel_roll  # Roll
+            self.rpy[1] = 0.98 * gyro_pitch + 0.02 * accel_pitch  # Pitch
+            self.rpy[2] = gyro_yaw # Yaw
+
+            # Update heading with IMU yaw
             self.theta = self.rpy[2]
+        else:
+            self.theta += dtheta
 
         # Debug
-        if self.debug:
+        if self.debug and (current_time - self.last_debug).to_sec() > 0.5:
+            self.last_debug = current_time
             rospy.loginfo(f"")
             rospy.loginfo(f'dt: {dt:.3f}, d: {d:.3f}, dtheta: {dtheta:.3f}')
             rospy.loginfo(f'x: {self.x:.3f}, y: {self.y:.3f}, theta: {self.theta:.3f}')
+            rospy.loginfo(f'acc: {self.acc}, gyro: {self.gyro}, rpy: {self.rpy}')
             rospy.loginfo(f"")
+        
+        # Publish
+        self.publish_odom()
+    
+    def publish_odom(self) -> None:
+        # --- Publish Odom ---
+        odom_msg = Odometry()
+        odom_msg.header.stamp = rospy.Time.now()
+        odom_msg.header.frame_id = 'odom'
+        odom_msg.child_frame_id = 'base_link'
+        odom_msg.pose.pose.position = Point(self.x, self.y, 0)
+        odom_msg.pose.pose.orientation = Quaternion(*tf.transformations.quaternion_from_euler(0, 0, self.theta))
+        odom_msg.twist.twist.linear = Vector3(self.linear_velocity, 0, 0)
+        odom_msg.twist.twist.angular = Vector3(0, 0, self.angular_velocity)
+        self.odom_pub.publish(odom_msg)
+
+        # --- Publish TF ---
+        self.odom_broadcaster.sendTransform((self.x, self.y, 0), tf.transformations.quaternion_from_euler(0, 0, self.theta), rospy.Time.now(), 'base_link', 'odom')
     
 if __name__ == '__main__':
     rospy.init_node('odom_node')
