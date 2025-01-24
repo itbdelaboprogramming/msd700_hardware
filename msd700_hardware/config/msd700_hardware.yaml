@@ -6,3 +6,8 @@ rplidar_config:
   angle_compensate: true
   scan_mode: "Standard"
   max_distance: 10.0
+
+arduino_config:
+  serial_port: "/dev/arduino"
+  serial_baudrate: 57600
+  frame_id: "base_link" # for imu

@@ -6,4 +6,3 @@ msd700_odom:
   odom_frame      : odom
   robot_frame     : base_footprint
   debug           : true
-

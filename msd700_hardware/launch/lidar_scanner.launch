@@ -1,8 +1,11 @@
 <launch>
-    <arg name="frame_id" default="base_link" />
-
-    <!-- Load lidar parameters -->
-    <rosparam command="load" file="$(find msd700_hardware)/config/msd700_lidar.yaml" />
+    <arg name="frame_id"            default="base_link" />
+    <arg name="serial_port"         default="/dev/rplidar" />
+    <arg name="serial_baudrate"     default="115200" />
+    <arg name="angle_compensate"    default="True" />
+    <arg name="inverted"            default="False" />
+    <arg name="max_distance"        default="10.0" />
+    <arg name="scan_mode"           default="Standard" />
 
     <!-- Launch RPLIDAR node -->
     <node pkg="rplidar_ros" type="rplidarNode" name="rplidarNode" output="screen">
