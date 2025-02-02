@@ -11,3 +11,4 @@ arduino_config:
   serial_port: "/dev/arduino"
   serial_baudrate: 57600
   frame_id: "base_link" # for imu
+

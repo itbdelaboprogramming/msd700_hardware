@@ -39,9 +39,6 @@ class HardwareStateParser:
         self.hardware_state_sub = rospy.Subscriber('/hardware_state', HardwareState, self.hardware_state_callback, queue_size=10)
 
     def hardware_state_callback(self, msg: HardwareState) -> None:
-        if self.debug:
-            rospy.loginfo("hardware state received")
-
         # Update raw values
         self.right_motor_pulse_delta = msg.right_motor_pulse_delta
         self.left_motor_pulse_delta = msg.left_motor_pulse_delta

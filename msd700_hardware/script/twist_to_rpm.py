@@ -12,7 +12,7 @@ class TwistToRPM:
         self.debug              = rospy.get_param('msd700_odom/debug', False)
 
         # Publisher and Subscriber
-        self.rpm_pub_           = rospy.Publisher('/hardware/rpm', Float32MultiArray, queue_size=1)
+        self.joint_state_pub = rospy.Publisher('/joint_states', JointState, queue_size=1)
         self.twist_sub_         = rospy.Subscriber('/cmd_vel', Twist, self.twist_callback)
     
     def twist_to_rpm(self, linear_x:float, angular_z:float) -> Tuple[float, float]:
