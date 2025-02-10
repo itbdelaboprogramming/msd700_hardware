@@ -1,0 +1,4 @@
+msd700_hardware:
+  imu_frame: "base_link"
+  mag_frame: "base_link"
+  az_offset: 0.0

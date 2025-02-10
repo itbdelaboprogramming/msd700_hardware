@@ -16,9 +16,9 @@ from std_msgs.msg import Float32MultiArray
 class HardwareStateParser:
     def __init__(self) -> None:
         # Parameters
-        self.az_offset = rospy.get_param('msd700_hardware/az_offset', 0.0)
-        self.frame_id = rospy.get_param('msd700_hardware/frame_id', 'base_link')
-        self.debug = rospy.get_param('msd700_hardware/debug', False)
+        self.az_offset      = rospy.get_param('msd700_hardware/az_offset', 0.0)
+        self.imu_frame      = rospy.get_param('msd700_hardware/imu_frame', 'base_link')
+        self.mag_frame      = rospy.get_param('msd700_hardware/mag_frame', 'base_link')
 
         # Variables
         self.right_motor_pulse_delta = 0.0
@@ -39,9 +39,6 @@ class HardwareStateParser:
         self.hardware_state_sub = rospy.Subscriber('/hardware_state', HardwareState, self.hardware_state_callback, queue_size=10)
 
     def hardware_state_callback(self, msg: HardwareState) -> None:
-        if self.debug:
-            rospy.loginfo("hardware state received")
-
         # Update raw values
         self.right_motor_pulse_delta = msg.right_motor_pulse_delta
         self.left_motor_pulse_delta = msg.left_motor_pulse_delta
@@ -73,7 +70,7 @@ class HardwareStateParser:
                         , gyr_x: float, gyr_y: float, gyr_z: float) -> None:
         imu_raw_msg = Imu()
         imu_raw_msg.header.stamp = rospy.Time.now()
-        imu_raw_msg.header.frame_id = self.frame_id
+        imu_raw_msg.header.frame_id = self.imu_frame
 
         imu_raw_msg.orientation = Quaternion(*tf.transformations.quaternion_from_euler(roll, pitch, yaw))
         imu_raw_msg.angular_velocity = Vector3(gyr_x, gyr_y, gyr_z)
@@ -87,7 +84,7 @@ class HardwareStateParser:
     def publish_mag(self, mag_x: float, mag_y: float, mag_z: float) -> None:
         mag_msg = MagneticField()
         mag_msg.header.stamp = rospy.Time.now()
-        mag_msg.header.frame_id = self.frame_id
+        mag_msg.header.frame_id = self.mag_frame
         mag_msg.magnetic_field = Vector3(mag_x, mag_y, mag_z)
         self.mag_pub.publish(mag_msg)
     

@@ -1,16 +1,34 @@
 <launch>
-    <arg name="use_rviz" default="false"/>
-    <arg name="frame_id" default="base_link" />
+    <arg name="use_rviz" default="false"/>          <!-- Use RViz -->
+    <arg name="use_multiple" default="false" />     <!-- Use 1 (false) or 2 (true) lidar -->
 
     <!-- Serial Communication with Firmware (Arduino) -->
     <include file="$(find msd700_hardware)/launch/serial_arduino.launch">
-        <arg name="frame_id" value="$(arg frame_id)" />
     </include>
 
-    <!-- RPLidar A1 -->
-    <include file="$(find msd700_hardware)/launch/lidar_scanner.launch">
-        <arg name="frame_id" value="$(arg frame_id)" />
-    </include>
+    <!-- RPLidar -->
+    <group if="$(arg use_multiple_lidar)">
+        <!-- RPLidar 1 -->
+        <include file="$(find msd700_hardware)/launch/lidar_scanner.launch">
+            <arg name="name" value="rplidar1_node" />
+            <arg name="port" value="/dev/rplidar1" />
+            <arg name="topic_name" value="scan1" />
+        </include>
+        <!-- RPLidar 2 -->
+        <include file="$(find msd700_hardware)/launch/lidar_scanner.launch">
+            <arg name="name" value="rplidar2_node" />
+            <arg name="port" value="/dev/rplidar2" />
+            <arg name="topic_name" value="scan2" />
+        </include>
+    </group>
+    <group unless="$(arg use_multiple_lidar)">
+        <!-- RPLidar -->
+        <include file="$(find msd700_hardware)/launch/lidar_scanner.launch">
+            <arg name="name" value="rplidar_node" />
+            <arg name="port" value="/dev/rplidar1" />
+            <arg name="topic_name" value="scan" />
+        </include>
+    </group>
 
     <!-- Odometry -->
     <include file="$(find msd700_hardware)/launch/odometry.launch"/>
