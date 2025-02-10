@@ -1,9 +1,19 @@
 <launch>
+    <!-- Parameters -->
+    <arg name="use_rviz"            default="false"/>
+    <arg name="hardware_config"     default="$(find msd700_hardware)/config/msd700_hardware.config"/>
+    <arg name="odom_config"         default="$(find msd700_hardware)/config/msd700_odometry.config"/>
+
+    <rosparam command="load"     file="$(arg serial_config_file)" />
+    <rosparam command="load"     file="$(arg odom_config_file)" />
     <arg name="use_rviz" default="false"/>          <!-- Use RViz -->
     <arg name="use_multiple" default="false" />     <!-- Use 1 (false) or 2 (true) lidar -->
 
     <!-- Serial Communication with Firmware (Arduino) -->
     <include file="$(find msd700_hardware)/launch/serial_arduino.launch">
+        <arg name="port"        value="$(param arduino_config/serial_port)" />
+        <arg name="baud"        value="$(param arduino_config/serial_baudrate)" />
+        <arg name="frame_id"    value="$(param arduino_config/frame_id)" />
     </include>
 
     <!-- RPLidar -->
@@ -31,7 +41,9 @@
     </group>
 
     <!-- Odometry -->
-    <include file="$(find msd700_hardware)/launch/odometry.launch"/>
+    <include file="$(find msd700_hardware)/launch/odometry.launch">
+        <arg name="config_file"       value="$(arg odom_config)" />
+    </include>
 
     <!-- RVIZ -->
     <group if="$(arg use_rviz)">
