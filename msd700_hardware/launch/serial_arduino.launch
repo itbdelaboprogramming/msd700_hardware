@@ -1,7 +1,6 @@
 <launch>
     <arg name="port" default="/dev/arduino"/>
     <arg name="baud" default="57600"/>
-    <arg name="frame_id" default="base_link" />
 
     <!-- Serial Communication with Firmware -->
     <node pkg="rosserial_python" type="serial_node.py" name="serial_node" respawn="true" output="screen">
@@ -10,8 +9,6 @@
     </node>
 
     <!-- Hardware State Parser -->
-    <node pkg="msd700_hardware" type="hardware_state_node.py" name="hardware_state_node" output="screen">
-        <param name="frame_id" value="$(arg frame_id)"/>
-    </node>
+    <node pkg="msd700_hardware" type="hardware_state_node.py" name="hardware_state_node" output="screen" />
 
 </launch>

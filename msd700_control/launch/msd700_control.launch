@@ -1,0 +1,10 @@
+<launch>
+    <!-- Load config files -->
+    <rosparam file="$(find my_turtlebot_controller)/config/diff_drive_controller.yaml" command="load" />
+
+    <!-- Launch the hardware interface -->
+    <node pkg="my_robot_control" type="my_robot_hw_interface" name="robot_hw_interface" output="screen" />
+
+    <!-- Spawn diff_drive_controller -->
+    <node pkg="controller_manager" type="spawner" name="spawner" args="diff_drive_controller" output="screen" />
+</launch>

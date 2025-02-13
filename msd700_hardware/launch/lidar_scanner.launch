@@ -1,18 +1,18 @@
 <launch>
-    <arg name="frame_id" default="base_link" />
-    <arg name="name" default="rplidar" />
-    <arg name="scan_topic" default="scan" />
-    <arg name="port" default="/dev/rplidar" />
+    <arg name="name"        default="rplidar" />        <!-- Node name -->
+    <arg name="port"        default="/dev/rplidar" />   <!-- Lidar Port -->
+    <arg name="scan_topic"  default="scan" />           <!-- Scan topic -->
+    <arg name="frame_id"    default="base_link" />      <!-- Scan frame_id -->
 
     <!-- Launch RPLIDAR node -->
     <node pkg="rplidar_ros" type="rplidarNode" name="$(arg name)" output="screen">
-        <param name="serial_port" value="$(arg port)" />
-        <param name="serial_baudrate" value="115200" />
-        <param name="angle_compensate" value="True" />
-        <param name="frame_id" value="$(arg frame_id)" />
-        <param name="inverted" value="False" />
-        <param name="max_distance" value="10.0" />
-        <param name="scan_mode" value="Standard" />
+        <param name="serial_port"       value="$(arg port)" />
+        <param name="serial_baudrate"   value="115200" />
+        <param name="angle_compensate"  value="True" />
+        <param name="frame_id"          value="$(arg frame_id)" />
+        <param name="inverted"          value="False" />
+        <param name="max_distance"      value="10.0" />
+        <param name="scan_mode"         value="Standard" />
 
         <remap from="scan" to="$(arg scan_topic)" />
     </node>

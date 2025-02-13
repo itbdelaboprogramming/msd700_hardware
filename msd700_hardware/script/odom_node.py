@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# --- odom_node.py ---
+# [odom_node.py]
 # Publishes odometry data (topic and tf) from motor pulses and IMU data
 
 import os, sys
@@ -25,15 +25,14 @@ class OdomNode:
         self.motor_pulse_sub    = rospy.Subscriber('/hardware/motor_pulse', Float32MultiArray, self.motor_pulse_callback)
 
         # Publisher
-        self.pose_pub = rospy.Publisher('/hardware/pose', PoseStamped, queue_size=1)
+        self.pose_pub           = rospy.Publisher('/hardware/pose', PoseStamped, queue_size=1)
 
         # Parameters
-        self.compute_period     = rospy.get_param('msd700_odom/compute_period', 30)     # ms
-        self.encoder_ppr        = rospy.get_param('msd700_odom/encoder_ppr', 12)      # ppr
-        self.wheel_distance     = rospy.get_param('msd700_odom/wheel_distance', 230)/100   # cm
-        self.wheel_radius       = rospy.get_param('msd700_odom/wheel_radius', 23)/100     # cm
+        self.compute_period     = rospy.get_param('msd700_odom/compute_period', 30)         # ms
+        self.encoder_ppr        = rospy.get_param('msd700_odom/encoder_ppr', 12)            # ppr
+        self.wheel_distance     = rospy.get_param('msd700_odom/wheel_distance', 230)/100.0  # cm
+        self.wheel_radius       = rospy.get_param('msd700_odom/wheel_radius', 23)/100.0     # cm
         self.use_imu            = rospy.get_param('msd700_odom/use_imu', True)
-        self.debug              = rospy.get_param('msd700_odom/debug', False)
 
         # Variables
         # Odometry data
@@ -113,15 +112,6 @@ class OdomNode:
         else:
             self.theta += dtheta
 
-        # Debug
-        if self.debug and (current_time - self.last_debug).to_sec() > 0.5:
-            self.last_debug = current_time
-            rospy.loginfo(f"")
-            rospy.loginfo(f'dt: {dt:.3f}, d: {d:.3f}, dtheta: {dtheta:.3f}')
-            rospy.loginfo(f'x: {self.x:.3f}, y: {self.y:.3f}, theta: {self.theta:.3f}')
-            rospy.loginfo(f'acc: {self.acc}, gyro: {self.gyro}, rpy: {self.rpy}')
-            rospy.loginfo(f"")
-        
         # Publish
         self.publish_odom()
     
