@@ -6,9 +6,11 @@ diff_drive_controller:
   type: "diff_drive_controller/DiffDriveController"
   left_wheel: "left_wheel_joint"
   right_wheel: "right_wheel_joint"
-  cmd_vel_timeout: 0.5
-  publish_rate: 50
+
   wheel_separation: 0.16
   wheel_radius: 0.033
+
+  cmd_vel_timeout: 0.5
+  publish_rate: 50
+
   velocity_rolling_window_size: 10
-  enable_odom_tf: true

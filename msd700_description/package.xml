@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>msd700_description</name>
+  <version>0.0.0</version>
+  <description>The msd700_description package</description>
+
+  <maintainer email="gswt@todo.todo">gswt</maintainer>
+
+  <license>TODO</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>roscpp</build_depend>
+  <build_export_depend>roscpp</build_export_depend>
+  <exec_depend>roscpp</exec_depend>
+
+  <export>
+  </export>
+</package>

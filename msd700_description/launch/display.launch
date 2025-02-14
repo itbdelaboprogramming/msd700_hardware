@@ -1,0 +1,19 @@
+<launch>
+    <!-- Arguments -->
+    <arg name="xacro_path" default="$(find msd700_description)/urdf/msd700_prototype.urdf.xacro" />
+
+    <!-- Add robot description urdf to parameter server -->
+    <param name="robot_description" command="$(find xacro)/xacro $(arg xacro_path)" />
+
+    <!-- Joint state publisher -->
+    <node name="joint_state_publisher"
+            pkg="joint_state_publisher" type="joint_state_publisher" />
+
+    <!-- Robot state publisher  -->
+    <node name="robot_state_publisher"
+            pkg="robot_state_publisher" type="robot_state_publisher" />
+
+    <!-- RViz -->
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find msd700_description)/rviz/msd700_description.rviz" />
+
+</launch>

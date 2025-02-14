@@ -4,54 +4,114 @@
 #include <hardware_interface/joint_state_interface.h>
 #include <hardware_interface/robot_hw.h>
 #include <msd700_msgs/HardwareCommand.h>
+#include <std_msgs/Float32MultiArray.h>
 
 class MSD700HWInterface : public hardware_interface::RobotHW {
 public:
-    MSD700HWInterface(ros::NodeHandle nh) : nh(nh) {
+    MSD700HWInterface(ros::NodeHandle nh) : nh_(nh) {
         // Register joint state interface
         // (Read the current state of the robot)
-        hardware_interface::JointStateHandle left_wheel_handle("left_wheel_joint", &pos[0], &vel[0], &eff[0]);
+        hardware_interface::JointStateHandle left_wheel_handle("left_wheel_joint", &pos_[0], &vel_[0], &eff_[0]);
         jnt_state_interface.registerHandle(left_wheel_handle);
-        hardware_interface::JointStateHandle right_wheel_handle("right_wheel_joint", &pos[1], &vel[1], &eff[1]);
+        hardware_interface::JointStateHandle right_wheel_handle("right_wheel_joint", &pos_[1], &vel_[1], &eff_[1]);
         jnt_state_interface.registerHandle(right_wheel_handle);
         registerInterface(&jnt_state_interface);
 
         // Register joint velocity interface
         // (Write the velocity command to the robot)
-        hardware_interface::JointHandle left_wheel_vel_handle(jnt_state_interface.getHandle("left_wheel_joint"), &cmd[0]);
+        hardware_interface::JointHandle left_wheel_vel_handle(jnt_state_interface.getHandle("left_wheel_joint"), &cmd_[0]);
         jnt_vel_interface.registerHandle(left_wheel_vel_handle);
-        hardware_interface::JointHandle right_wheel_vel_handle(jnt_state_interface.getHandle("right_wheel_joint"), &cmd[1]);
+        hardware_interface::JointHandle right_wheel_vel_handle(jnt_state_interface.getHandle("right_wheel_joint"), &cmd_[1]);
         jnt_vel_interface.registerHandle(right_wheel_vel_handle);
         registerInterface(&jnt_vel_interface);
 
+        // Parameters
+        nh.param("wheel_radius"     , wheel_radius, 0.1);
+        nh.param("wheel_separation" , wheel_separation, 0.2);
+        nh.param("motor_ppr"        , motor_ppr, 2400.0);
+        nh.param("enable_odom"      , enable_odom, false);
+
+        // Initial variables
+        pos_[0] = pos_[1] = 0.0;
+        vel_[0] = vel_[1] = 0.0;
+        eff_[0] = eff_[1] = 0.0;
+        cmd_[0] = cmd_[1] = 0.0;
+
+        ros::Publisher hardware_command_pub = nh_.advertise<msd700_msgs::HardwareCommand>("/hardware_command", 1);
+
+        if(enable_odom){
+            ros::Subscriber motor_pulse_sub = nh_.subscribe("/hardware/motor_pulse", 10, &MSD700HWInterface::motor_pulse_callback, this);
+        }
+
+    }
+
+    void read(){
+        // No process
     }
 
     void write(){
         // rpm = (rad/s) * (60 / (2*pi))
-        double left_rpm = cmd[0] * (60.0 / (2.0 * M_PI));
-        double right_rpm = cmd[1] * (60.0 / (2.0 * M_PI));
+        double left_rpm = cmd_[0] * (60.0 / (2.0 * M_PI));
+        double right_rpm = cmd_[1] * (60.0 / (2.0 * M_PI));
         
         msd700_msgs::HardwareCommand cmd_msg;
         cmd_msg.movement_command    = 0;            // Not used
         cmd_msg.cam_angle_command   = 0;            // Not used
         cmd_msg.right_motor_speed   = right_rpm;
         cmd_msg.left_motor_speed    = left_rpm;
-        
+
         // Publish the message to your motor controller topic
         hardware_command_pub.publish(cmd_msg);
     }
 
 private:
+
+    void motor_pulse_callback(const std_msgs::Float32MultiArray::ConstPtr& msg) {
+        if(!enable_odom){
+            return;
+        }
+
+        double now = ros::Time::now().toSec();
+        double delta_time = now - last_time;
+
+        // read pulse
+        double delta_left_pulse = msg->data[0];
+        double delta_right_pulse = msg->data[1];
+
+        // rpm = (pulse) * (60 / ppr)
+        double delta_left_rpm = delta_left_pulse * (60.0 / motor_ppr);
+        double delta_right_rpm = delta_right_pulse * (60.0 / motor_ppr);
+
+        // m = (rpm) * (2*pi / 60)
+        double delta_left_m = delta_left_rpm * (2.0 * M_PI / 60.0);
+        double delta_right_m = delta_right_rpm * (2.0 * M_PI / 60.0);
+
+        // update time
+        last_time = now;
+
+        return;
+    }
+
+    // Parameters
+    double wheel_radius;
+    double wheel_separation;
+    double motor_ppr;
+    bool enable_odom;
+
     hardware_interface::JointStateInterface jnt_state_interface;
     hardware_interface::VelocityJointInterface jnt_vel_interface;
     
-    double cmd[2];
-    double pos[2];
-    double vel[2];
-    double eff[2];
+    // Variables
+    double cmd_[2];
+    double pos_[2];
+    double vel_[2];
+    double eff_[2];
 
-    ros::NodeHandle nh;
-    ros::Publisher hardware_command_pub = nh.advertise<msd700_msgs::HardwareCommand>("/hardware_command", 1);
+    double last_time;
+
+    ros::NodeHandle nh_;
+    ros::Publisher hardware_command_pub;
+    ros::Subscriber motor_pulse_sub;
 
 };
 
