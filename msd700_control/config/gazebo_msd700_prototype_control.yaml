@@ -1,0 +1,19 @@
+msd700_prototype:
+  gazebo_ros_control:
+    pid_gains:
+      bl_wheel_joint:
+        p: 100.0
+        i: 0.0
+        d: 0.0
+      br_wheel_joint:
+        p: 100.0
+        i: 0.0
+        d: 0.0
+      fl_wheel_joint:
+        p: 100.0
+        i: 0.0
+        d: 0.0
+      fr_wheel_joint:
+        p: 100.0
+        i: 0.0
+        d: 0.0

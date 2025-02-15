@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="msd700_prototype">
-    <xacro:property name="chassis_length" value="0.55"/>
-    <xacro:property name="chassis_width" value="0.28"/>
-    <xacro:property name="chassis_height" value="0.3"/>
+    <xacro:property name="chassis_length" value="0.4"/>
+    <xacro:property name="chassis_width" value="0.3"/>
+    <xacro:property name="chassis_height" value="0.22"/>
 
     <xacro:property name="wheel_radius" value="0.054"/>
     <xacro:property name="wheel_width" value="0.02"/>
@@ -11,6 +11,8 @@
     <xacro:include filename="$(find msd700_description)/urdf/common/materials.xacro"/>
     <xacro:include filename="$(find msd700_description)/urdf/common/wheel.urdf.xacro"/>
     <xacro:include filename="$(find msd700_description)/urdf/sensors/2d_lidar.urdf.xacro"/>
+
+    <xacro:include filename="$(find msd700_description)/urdf/gazebo/msd700_prototype.gazebo.xacro"/>
 
     <link name="base_link">
         <!-- <origin xyz="0 0 ${chassis_height + wheel_radius/2}" rpy="0 0 0"/> -->
@@ -24,9 +26,11 @@
 
     <link name="chassis_link">
         <visual>
-            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <!-- <origin xyz="-${chassis_length/2} -${chassis_width/2} -${chassis_height/2}" rpy="0 0 0"/> -->
+            <origin xyz="-0.25 -0.15 -0.09" rpy="0 0 0"/>
             <geometry>
-                <box size="${chassis_length} ${chassis_width} ${chassis_height}"/>
+                <!-- <box size="${chassis_length} ${chassis_width} ${chassis_height}"/> -->
+                <mesh filename="package://msd700_description/meshes/msd700_without_arm.stl" scale="0.0015 0.0015 0.001"/>
             </geometry>
             <material name="red"/>
         </visual>

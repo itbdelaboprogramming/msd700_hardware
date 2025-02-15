@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<robot xmlns="http://www.ros.org/wiki/urdf" name="msd700_prototype_control">
+
+    <gazebo>
+        <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+            <robotNamespace>/msd700_prototype</robotNamespace>
+            <robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType>
+        </plugin>
+    </gazebo>
+
+    <transmission name="fl_wheel_trans">
+        <type>transmission_interface/SimpleTransmission</type>
+        <actuator name="fl_wheel_motor">
+            <mechanicalReduction>1</mechanicalReduction>
+        </actuator>
+        <joint name="fl_wheel_joint">
+            <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+        </joint>
+    </transmission>
+
+    <transmission name="bl_wheel_trans">
+        <type>transmission_interface/SimpleTransmission</type>
+        <actuator name="bl_wheel_motor">
+            <mechanicalReduction>1</mechanicalReduction>
+        </actuator>
+        <joint name="bl_wheel_joint">
+            <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+        </joint>
+    </transmission>
+
+    <transmission name="br_wheel_trans">
+        <type>transmission_interface/SimpleTransmission</type>
+        <actuator name="br_wheel_motor">
+            <mechanicalReduction>1</mechanicalReduction>
+        </actuator>
+        <joint name="br_wheel_joint">
+            <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+        </joint>
+    </transmission>
+
+    <transmission name="fr_wheel_trans">
+        <type>transmission_interface/SimpleTransmission</type>
+        <actuator name="fr_wheel_motor">
+            <mechanicalReduction>1</mechanicalReduction>
+        </actuator>
+        <joint name="fr_wheel_joint">
+            <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+        </joint>
+    </transmission>
+
+
+
+</robot>

@@ -34,7 +34,7 @@ Include this file and make a joint between laser_frame and your link.
 
         <gazebo reference="${prefix}_link">
             <material>Gazebo/Black</material>
-            <sensor name="${prefix}_sensor" type="ray" parent="${prefix}_link">
+            <sensor name="${prefix}_sensor" type="ray">
                 <pose>0 0 0 0 0 0</pose>
                 <visualize>true</visualize>
                 <update_rate>5</update_rate>

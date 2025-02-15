@@ -1,9 +1,9 @@
 <launch>
     <!-- Load config files -->
-    <rosparam file="$(find my_turtlebot_controller)/config/diff_drive_controller.yaml" command="load" />
+    <rosparam file="$(find msd700_control)/config/msd700_controllers.yaml" command="load" />
 
     <!-- Launch the hardware interface -->
-    <node pkg="my_robot_control" type="my_robot_hw_interface" name="robot_hw_interface" output="screen" />
+    <node pkg="msd700_control" type="msd700_hw_interface" name="msd700_hw_interface" output="screen" />
 
     <!-- Spawn diff_drive_controller -->
     <node pkg="controller_manager" type="spawner" name="spawner" args="diff_drive_controller" output="screen" />
