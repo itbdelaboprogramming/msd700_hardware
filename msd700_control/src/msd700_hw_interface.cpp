@@ -13,31 +13,30 @@ public:
         // This handles the current state of the robot.
         // We can update these values in the read() function.
         // In simulation, these values are updated by the gazebo plugin
-        hardware_interface::JointStateHandle fl_handle("fl_wheel_joint", &pos_[0], &vel_[0], &eff_[0]);
-        hardware_interface::JointStateHandle bl_handle("bl_wheel_joint", &pos_[1], &vel_[1], &eff_[1]);
+        hardware_interface::JointStateHandle bl_handle("bl_wheel_joint", &pos_[0], &vel_[0], &eff_[0]);
+        hardware_interface::JointStateHandle br_handle("br_wheel_joint", &pos_[1], &vel_[1], &eff_[1]);
         hardware_interface::JointStateHandle fr_handle("fr_wheel_joint", &pos_[2], &vel_[2], &eff_[2]);
-        hardware_interface::JointStateHandle br_handle("br_wheel_joint", &pos_[3], &vel_[3], &eff_[3]);
+        hardware_interface::JointStateHandle fl_handle("fl_wheel_joint", &pos_[3], &vel_[3], &eff_[3]);
 
-        jnt_state_interface.registerHandle(fl_handle);
         jnt_state_interface.registerHandle(bl_handle);
-        jnt_state_interface.registerHandle(fr_handle);
         jnt_state_interface.registerHandle(br_handle);
+        jnt_state_interface.registerHandle(fl_handle);
+        jnt_state_interface.registerHandle(fr_handle);
 
         registerInterface(&jnt_state_interface);
 
         // Register joint velocity interface
         // This is where controllers write their commands.
         // We can convert these commands to actual motor commands in the write() function.
-
-        hardware_interface::JointHandle fl_vel_handle(jnt_state_interface.getHandle("fl_wheel_joint"), &cmd_[0]);
         hardware_interface::JointHandle bl_vel_handle(jnt_state_interface.getHandle("bl_wheel_joint"), &cmd_[0]);
-        hardware_interface::JointHandle fr_vel_handle(jnt_state_interface.getHandle("fr_wheel_joint"), &cmd_[1]);
         hardware_interface::JointHandle br_vel_handle(jnt_state_interface.getHandle("br_wheel_joint"), &cmd_[1]);
+        hardware_interface::JointHandle fl_vel_handle(jnt_state_interface.getHandle("fl_wheel_joint"), &cmd_[2]);
+        hardware_interface::JointHandle fr_vel_handle(jnt_state_interface.getHandle("fr_wheel_joint"), &cmd_[3]);
 
-        jnt_vel_interface.registerHandle(fl_vel_handle);
         jnt_vel_interface.registerHandle(bl_vel_handle);
-        jnt_vel_interface.registerHandle(fr_vel_handle);
         jnt_vel_interface.registerHandle(br_vel_handle);
+        jnt_vel_interface.registerHandle(fl_vel_handle);
+        jnt_vel_interface.registerHandle(fr_vel_handle);
 
         registerInterface(&jnt_vel_interface);
 
@@ -46,10 +45,11 @@ public:
             pos_[i] = 0.0;
             vel_[i] = 0.0;
             eff_[i] = 0.0;
+            cmd_[i] = 0.0;
         }
-        cmd_[0] = cmd_[1] = 0.0;
 
-        hardware_command_pub_ = nh_.advertise<msd700_msgs::HardwareCommand>("/hardware_command", 1);
+        // Publisher
+        hardware_command_pub_ = nh_.advertise<msd700_msgs::HardwareCommand>("/hardware_command", 10);
 
     }
 
@@ -60,6 +60,12 @@ public:
     void write(){
         // --- Publish HardwareCommand to Firmware based on cmd_ ---
         // The cmd_ controlled by controller_manager (diff_drive_controller)
+
+        // Debug cmd_
+        ROS_INFO("pos_[0]: %f, pos_[1]: %f, pos_[2]: %f, pos_[3]: %f", pos_[0], pos_[1], pos_[2], pos_[3]);
+        ROS_INFO("vel_[0]: %f, vel_[1]: %f, vel_[2]: %f, vel_[3]: %f", vel_[0], vel_[1], vel_[2], vel_[3]);
+        ROS_INFO("eff_[0]: %f, eff_[1]: %f, eff_[2]: %f, eff_[3]: %f", eff_[0], eff_[1], eff_[2], eff_[3]);
+        ROS_INFO("cmd_[0]: %f, cmd_[1]: %f, cmd_[2]: %f, cmd_[3]: %f", cmd_[0], cmd_[1], cmd_[2], cmd_[3]);
 
         // rpm = (rad/s) * (60 / (2*pi))
         double left_rpm = cmd_[0] * (60.0 / (2.0 * M_PI));
@@ -91,10 +97,10 @@ private:
     hardware_interface::VelocityJointInterface jnt_vel_interface;
     
     // Variables
-    double pos_[4];    // positions for [fl, bl, fr, br]
-    double vel_[4];    // velocities for [fl, bl, fr, br]
-    double eff_[4];    // efforts for [fl, bl, fr, br]
-    double cmd_[2];    // commands for [left, right]
+    double pos_[4];    // positions for [bl, br, fr, fl]
+    double vel_[4];    // velocities for [bl, br, fr, fl]
+    double eff_[4];    // efforts for [bl, br, fr, fl]
+    double cmd_[4];    // commands for [bl, br, fr, fl]
 
 };
 

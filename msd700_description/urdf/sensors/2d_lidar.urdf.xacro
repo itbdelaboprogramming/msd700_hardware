@@ -11,7 +11,7 @@ Include this file and make a joint between laser_frame and your link.
 
     <xacro:macro name="add_2d_lidar" params="prefix topic parent x y z rpy">
         <joint name="${prefix}_joint" type="fixed">
-            <origin xyz="${x} ${y} ${z+0.027}" rpy="${rpy}"/>
+            <origin xyz="${x} ${y} ${z+0.04}" rpy="${rpy}"/>
             <parent link="${parent}"/>
             <child link="${prefix}_link"/>
         </joint>

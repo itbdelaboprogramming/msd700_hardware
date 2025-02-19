@@ -8,16 +8,6 @@
         </plugin>
     </gazebo>
 
-    <transmission name="fl_wheel_trans">
-        <type>transmission_interface/SimpleTransmission</type>
-        <actuator name="fl_wheel_motor">
-            <mechanicalReduction>1</mechanicalReduction>
-        </actuator>
-        <joint name="fl_wheel_joint">
-            <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
-        </joint>
-    </transmission>
-
     <transmission name="bl_wheel_trans">
         <type>transmission_interface/SimpleTransmission</type>
         <actuator name="bl_wheel_motor">
@@ -38,6 +28,16 @@
         </joint>
     </transmission>
 
+    <transmission name="fl_wheel_trans">
+        <type>transmission_interface/SimpleTransmission</type>
+        <actuator name="fl_wheel_motor">
+            <mechanicalReduction>1</mechanicalReduction>
+        </actuator>
+        <joint name="fl_wheel_joint">
+            <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+        </joint>
+    </transmission>
+
     <transmission name="fr_wheel_trans">
         <type>transmission_interface/SimpleTransmission</type>
         <actuator name="fr_wheel_motor">
@@ -47,7 +47,5 @@
             <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
         </joint>
     </transmission>
-
-
 
 </robot>

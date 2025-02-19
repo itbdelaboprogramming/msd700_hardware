@@ -1,10 +1,16 @@
 <launch>
-    <!-- Load config files -->
-    <rosparam file="$(find msd700_control)/config/msd700_controllers.yaml" command="load" />
+    <!-- Arguments -->
+    <arg name="controller_config" default="$(find msd700_control)/config/msd700_controllers.yaml" />
+    <arg name="sim_controller_config" default="$(find msd700_control)/config/msd700_sim_controllers.yaml" />
+    
+    <!-- Load Controller Configurations-->
+    <rosparam file="$(arg controller_config)" command="load" />
+    <rosparam file="$(arg sim_controller_config)" command="load" />
 
     <!-- Launch the hardware interface -->
     <node pkg="msd700_control" type="msd700_hw_interface" name="msd700_hw_interface" output="screen" />
 
     <!-- Spawn diff_drive_controller -->
-    <node pkg="controller_manager" type="spawner" name="spawner" args="diff_drive_controller" output="screen" />
+    <node pkg="controller_manager" type="spawner" name="spawner"
+        args="joint_state_controller diff_drive_controller" output="screen" ns="msd700_prototype"/>
 </launch>
