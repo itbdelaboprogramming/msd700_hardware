@@ -27,7 +27,7 @@ class HardwareStateParser:
         self.acc_x, self.acc_y, self.acc_z = 0.0, 0.0, 0.0
         self.gyro_x, self.gyro_y, self.gyro_z = 0.0, 0.0, 0.0
         self.mag_x, self.mag_y, self.mag_z = 0.0, 0.0, 0.0
-        self.uwb_dist, self.uwb_rho, self.uwb_dist = 0.0, 0.0, 0.0
+        self.uwb_dist, self.uwb_rho, self.uwb_dist, self.uwb_deviation = 0.0, 0.0, 0.0, 0.0
 
         self.az_offset = 0.0
 
@@ -61,9 +61,9 @@ class HardwareStateParser:
         self.mag_z = msg.mag_z / 1e6
 
         self.uwb_dist = msg.uwb_dist
-        self.uwb_dev = msg.uwb_dev
+        self.uwb_dev = msg.uwb_deviation
         self.uwb_rho = msg.uwb_rho
-        self.uwb_phi = msg.uwb_phi
+        self.uwb_theta = msg.uwb_theta
 
         # Publish
         self.publish_imu_raw(self.roll, self.pitch, self.yaw
@@ -71,7 +71,7 @@ class HardwareStateParser:
                             , self.gyr_x, self.gyr_y, self.gyr_z)
         self.publish_mag(self.mag_x, self.mag_y, self.mag_z)
         self.publish_motor_pulse(self.right_motor_pulse_delta, self.left_motor_pulse_delta)
-        self.publish_uwb(self.uwb_dist, self.uwb_dev, self.uwb_rho, self.uwb_phi)
+        self.publish_uwb(self.uwb_dist, self.uwb_dev, self.uwb_rho, self.uwb_theta)
 
     def publish_imu_raw(self, roll: float, pitch: float, yaw: float
                         , acc_x: float, acc_y: float, acc_z: float
@@ -101,9 +101,9 @@ class HardwareStateParser:
         motor_pulse_msg.data = [right_motor_pulse_delta, left_motor_pulse_delta]
         self.motor_pulse_pub.publish(motor_pulse_msg)
     
-    def publish_motor_pulse(self, uwb_dist: float, uwb_dev: float, uwb_rho: float, uwb_phi: float) -> None:
+    def publish_uwb(self, uwb_dist: float, uwb_dev: float, uwb_rho: float, uwb_theta: float) -> None:
         uwb_msg = Float32MultiArray()
-        uwb_msg.data = [uwb_dist, uwb_dev, uwb_rho, uwb_phi]
+        uwb_msg.data = [uwb_dist, uwb_dev, uwb_rho, uwb_theta]
         self.uwb_pub.publish(uwb_msg)
 
 if __name__ == '__main__':

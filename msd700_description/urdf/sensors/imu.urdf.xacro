@@ -1,0 +1,59 @@
+<!--
+[imu.urdf.xacro]
+-->
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" >
+
+    <xacro:macro name="add_imu" params="prefix topic parent xyz rpy">
+        <joint name="${prefix}_joint" type="fixed">
+            <origin xyz="${xyz}" rpy="${rpy}"/>
+            <parent link="${parent}"/>
+            <child link="${prefix}_link"/>
+        </joint>
+
+        <link name="${prefix}_link">
+            <visual>
+                <origin xyz="0 0 0" rpy="0 0 0"/>
+                <geometry>
+                    <box size="0.01 0.01 0.01"/>
+                </geometry>
+                <material name="black"/>
+            </visual>
+            <collision>
+                <origin xyz="0 0 0" rpy="0 0 0"/>
+                <geometry>
+                    <box size="0.01 0.01 0.01"/>
+                </geometry>
+            </collision>
+        </link>
+
+        <gazebo reference="${prefix}_link">
+            <material>Gazebo/Black</material>
+            <plugin name="imu_plugin" filename="libgazebo_ros_imu.so">
+                <alwaysOn>true</alwaysOn>
+                <bodyName>$base_link</bodyName>
+                <topicName>${topic}</topicName>
+                <serviceName>imu_service</serviceName>
+                <gaussianNoise>0.0</gaussianNoise>
+                <updateRate>10</updateRate>
+                <!-- <imu>
+                    <noise>
+                        <type>gaussian</type>
+                        <rate>
+                            <mean>0.0</mean>
+                            <stddev>2e-4</stddev>
+                            <bias_mean>0.0000075</bias_mean>
+                            <bias_stddev>0.0000008</bias_stddev>
+                        </rate>
+                        <accel>
+                            <mean>0.0</mean>
+                            <stddev>1.7e-2</stddev>
+                            <bias_mean>0.1</bias_mean>
+                            <bias_stddev>0.001</bias_stddev>
+                        </accel>
+                    </noise>
+                </imu> -->
+            </plugin>
+        </gazebo>
+    </xacro:macro>
+
+</robot>

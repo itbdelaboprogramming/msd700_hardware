@@ -54,18 +54,12 @@ public:
     }
 
     void read(){
-        // No process
+
     }
 
     void write(){
         // --- Publish HardwareCommand to Firmware based on cmd_ ---
         // The cmd_ controlled by controller_manager (diff_drive_controller)
-
-        // Debug cmd_
-        ROS_INFO("pos_[0]: %f, pos_[1]: %f, pos_[2]: %f, pos_[3]: %f", pos_[0], pos_[1], pos_[2], pos_[3]);
-        ROS_INFO("vel_[0]: %f, vel_[1]: %f, vel_[2]: %f, vel_[3]: %f", vel_[0], vel_[1], vel_[2], vel_[3]);
-        ROS_INFO("eff_[0]: %f, eff_[1]: %f, eff_[2]: %f, eff_[3]: %f", eff_[0], eff_[1], eff_[2], eff_[3]);
-        ROS_INFO("cmd_[0]: %f, cmd_[1]: %f, cmd_[2]: %f, cmd_[3]: %f", cmd_[0], cmd_[1], cmd_[2], cmd_[3]);
 
         // rpm = (rad/s) * (60 / (2*pi))
         double left_rpm = cmd_[0] * (60.0 / (2.0 * M_PI));
