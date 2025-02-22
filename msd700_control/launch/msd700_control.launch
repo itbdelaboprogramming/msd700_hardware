@@ -1,18 +1,14 @@
 <launch>
     <!-- Arguments -->
     <arg name="controller_config" default="$(find msd700_control)/config/msd700_controllers.yaml" />
-    <arg name="sim_controller_config" default="$(find msd700_control)/config/msd700_sim_controllers.yaml" />
+    <arg name="gazebo_controller_config" default="$(find msd700_control)/config/msd700_gazebo_controllers.yaml" />
     
     <!-- Load Controller Configurations-->
     <rosparam file="$(arg controller_config)" command="load" />
-    <rosparam file="$(arg sim_controller_config)" command="load" />
-
-    <!-- Launch the hardware interface -->
-    <node pkg="msd700_control" type="msd700_hw_interface" name="msd700_hw_interface" output="screen" />
+    <rosparam file="$(arg gazebo_controller_config)" command="load" />
 
     <!-- Spawn diff_drive_controller -->
     <node pkg="controller_manager" type="spawner" name="spawner"
         args="joint_state_controller diff_drive_controller" output="screen" ns="msd700_prototype">
-        <!-- <remap from="/msd700_prototype/joint_state_controller/cmd_vel" to="/cmd_vel"/> -->
     </node>
 </launch>

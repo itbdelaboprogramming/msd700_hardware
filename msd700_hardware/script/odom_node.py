@@ -65,8 +65,8 @@ class OdomNode:
 
     def motor_pulse_callback(self, msg: Float32MultiArray):
         # Get motor pulses
-        self.right_motor_pulse_delta = msg.data[0]
-        self.left_motor_pulse_delta = msg.data[1]
+        self.left_motor_pulse_delta = msg.data[0]
+        self.right_motor_pulse_delta = msg.data[1]
     
     def update_odom(self, event) -> None:
         # Reference:

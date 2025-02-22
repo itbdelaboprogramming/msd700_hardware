@@ -98,7 +98,7 @@ class HardwareStateParser:
     
     def publish_motor_pulse(self, right_motor_pulse_delta: float, left_motor_pulse_delta: float) -> None:
         motor_pulse_msg = Float32MultiArray()
-        motor_pulse_msg.data = [right_motor_pulse_delta, left_motor_pulse_delta]
+        motor_pulse_msg.data = [left_motor_pulse_delta, right_motor_pulse_delta]
         self.motor_pulse_pub.publish(motor_pulse_msg)
     
     def publish_uwb(self, uwb_dist: float, uwb_dev: float, uwb_rho: float, uwb_theta: float) -> None:

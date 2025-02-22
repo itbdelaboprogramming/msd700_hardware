@@ -1,0 +1,3 @@
+<launch>
+    <node pkg="msd700_control" type="msd700_hw_interface" name="msd700_hw_interface" output="screen" ns="msd700_prototype" />
+</launch>

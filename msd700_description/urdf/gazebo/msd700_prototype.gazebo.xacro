@@ -11,6 +11,7 @@
     <transmission name="bl_wheel_trans">
         <type>transmission_interface/SimpleTransmission</type>
         <actuator name="bl_wheel_motor">
+            <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
             <mechanicalReduction>1</mechanicalReduction>
         </actuator>
         <joint name="bl_wheel_joint">
@@ -21,6 +22,7 @@
     <transmission name="br_wheel_trans">
         <type>transmission_interface/SimpleTransmission</type>
         <actuator name="br_wheel_motor">
+            <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
             <mechanicalReduction>1</mechanicalReduction>
         </actuator>
         <joint name="br_wheel_joint">
@@ -31,6 +33,7 @@
     <transmission name="fl_wheel_trans">
         <type>transmission_interface/SimpleTransmission</type>
         <actuator name="fl_wheel_motor">
+            <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
             <mechanicalReduction>1</mechanicalReduction>
         </actuator>
         <joint name="fl_wheel_joint">
@@ -41,6 +44,7 @@
     <transmission name="fr_wheel_trans">
         <type>transmission_interface/SimpleTransmission</type>
         <actuator name="fr_wheel_motor">
+            <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
             <mechanicalReduction>1</mechanicalReduction>
         </actuator>
         <joint name="fr_wheel_joint">

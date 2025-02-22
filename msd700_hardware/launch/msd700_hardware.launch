@@ -6,6 +6,7 @@ This launch file contains the following:
 3. Odometry     (will be replaced and handled by ros_control later)
 4. RVIZ         (Optional)
 -->
+
 <launch>
     <!-- Parameters -->
     <arg name="odom_config"     default="$(find msd700_hardware)/config/msd700_odometry.yaml" />
@@ -49,6 +50,9 @@ This launch file contains the following:
     <include file="$(find msd700_hardware)/launch/odometry.launch">
         <arg name="config_file"       value="$(arg odom_config)" />
     </include>
+
+    <!-- Hardware interface -->
+    <include file="$(find msd700_hardware)/launch/hardware_interface.launch" />
 
     <!-- Add robot description urdf to parameter server -->
     <param name="robot_description" command="$(find xacro)/xacro $(arg xacro_path)" />
