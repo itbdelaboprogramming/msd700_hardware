@@ -1,6 +1,6 @@
 <launch>
     <!-- Argument -->
-    <arg name="config_file" default="$(find msd700_hardware)/config/msd700_odometry.config"/>
+    <arg name="config_file" default="$(find msd700_hardware)/config/msd700_odometry.yaml"/>
 
     <!-- Load param-->
     <rosparam command="load" file="$(arg config_file)" />

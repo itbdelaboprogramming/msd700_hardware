@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import rospy
 from nav_msgs.msg import Odometry
 import math
@@ -11,8 +12,9 @@ class OdomTuneNode:
         self.current_ppr = rospy.get_param('msd700_odom/encoder_ppr', 12)            # ppr
 
         # Variables
-        self.odom_dist      = 0.0
-        self.real_dist  = 0.0
+        self.odom_dist = 0.0
+        self.real_dist = 0.0
+        self.last_time = rospy.Time.now()
 
         # Subscriber
         self.odom_sub = rospy.Subscriber('/odom', Odometry, self.odom_callback)
@@ -21,6 +23,9 @@ class OdomTuneNode:
     
     def odom_callback(self, msg: Odometry) -> None:
         self.odom_dist = msg.pose.pose.position.x
+        if((rospy.Time.now() - self.last_time).to_sec() >= 5.0):
+            rospy.loginfo(f"Dist: {self.odom_dist}")
+            self.last_time = rospy.Time.now()
 
     def calculate_real_ppr(self):
         rospy.loginfo(f"Move the robot forward for a certain distance.")
@@ -32,3 +37,8 @@ class OdomTuneNode:
         rospy.loginfo(f"| Actual Distance     : {self.real_dist}")
         rospy.loginfo(f"| -> Real PPR         : {real_ppr}")
         rospy.loginfo(f"|----------------------------------------|")
+
+if __name__ == '__main__':
+    rospy.init_node('odom_tune_node')
+    odom_node = OdomTuneNode()
+    rospy.spin()

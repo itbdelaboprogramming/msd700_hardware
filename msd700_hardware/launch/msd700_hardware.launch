@@ -8,9 +8,10 @@ This launch file contains the following:
 -->
 <launch>
     <!-- Parameters -->
-    <arg name="odom_config"     default="$(find msd700_hardware)/config/msd700_odometry.yaml"/>
+    <arg name="odom_config"     default="$(find msd700_hardware)/config/msd700_odometry.yaml" />
+    <arg name="xacro_path"      default="$(find msd700_description)/urdf/msd700_prototype.urdf.xacro" />
 
-    <arg name="use_rviz"        default="false"/>          <!-- Use RViz -->
+    <arg name="use_rviz"        default="false" />          <!-- Use RViz -->
     <arg name="lidar_count"     default="1" />      <!-- Lidar count -->
 
     <!-- Serial Communication with Firmware (Arduino) -->
@@ -48,6 +49,11 @@ This launch file contains the following:
     <include file="$(find msd700_hardware)/launch/odometry.launch">
         <arg name="config_file"       value="$(arg odom_config)" />
     </include>
+
+    <!-- Add robot description urdf to parameter server -->
+    <param name="robot_description" command="$(find xacro)/xacro $(arg xacro_path)" />
+    <!-- Robot state publisher -->
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
 
     <!-- RVIZ -->
     <group if="$(arg use_rviz)">

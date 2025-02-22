@@ -1,15 +1,16 @@
 <launch>
     <!-- Arguments and parameter -->
     <arg name="odom_config" default="$(find msd700_hardware)/config/msd700_odometry.yaml" />
-    <rosparam file="$(arg odom_config)" command="load" />
 
     <!-- Serial Arduino -->
     <include file="$(find msd700_hardware)/launch/serial_arduino.launch" />
 
     <!-- Odometry based on data from firmware -->
-    <include file="$(find msd700_hardware)/launch/odometry.launch" />
+    <include file="$(find msd700_hardware)/launch/odometry.launch">
+        <arg name="config_file" default="$(arg odom_config)" />
+    </include>
 
     <!-- Odometry Tuning -->
-    <node pkg="msd700_hardware" type="odom_tune_node" name="odometry_tune_node" output="screen" />
+    <node pkg="msd700_hardware" type="odom_tune_node.py" name="odometry_tune_node" output="screen" />
 
 </launch>

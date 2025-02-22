@@ -13,6 +13,6 @@
     <!-- Spawn diff_drive_controller -->
     <node pkg="controller_manager" type="spawner" name="spawner"
         args="joint_state_controller diff_drive_controller" output="screen" ns="msd700_prototype">
-        <remap from="/msd700_prototype/joint_state_controller/cmd_vel" to="/cmd_vel"/>
+        <!-- <remap from="/msd700_prototype/joint_state_controller/cmd_vel" to="/cmd_vel"/> -->
     </node>
 </launch>
