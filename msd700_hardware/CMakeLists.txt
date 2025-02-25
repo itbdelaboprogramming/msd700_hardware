@@ -5,12 +5,13 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   std_msgs
   msd700_msgs
+  tf
   controller_manager
 	hardware_interface
 )
 
 catkin_package(
-	CATKIN_DEPENDS roscpp std_msgs msd700_msgs controller_manager hardware_interface
+	CATKIN_DEPENDS roscpp std_msgs msd700_msgs tf controller_manager hardware_interface
 )
 
 include_directories(

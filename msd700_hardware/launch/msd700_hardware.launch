@@ -13,43 +13,16 @@ This launch file contains the following:
     <arg name="xacro_path"      default="$(find msd700_description)/urdf/msd700_prototype.urdf.xacro" />
 
     <arg name="use_rviz"        default="false" />          <!-- Use RViz -->
-    <arg name="lidar_count"     default="1" />      <!-- Lidar count -->
+    <arg name="lidar_count"     default="1" />              <!-- Lidar count -->
 
-    <!-- Serial Communication with Firmware (Arduino) -->
-    <include file="$(find msd700_hardware)/launch/serial_arduino.launch"/>
+    <arg name="spawn_uart_device"      default="true" />           <!-- Spawn UART --> 
 
-    <!-- RPLidar -->
-    <group if="$(eval int(arg('lidar_count')) == 1)">
-        <!-- RPLidar -->
-        <include file="$(find msd700_hardware)/launch/lidar_scanner.launch">
-            <arg name="name" value="rplidar_node" />
-            <arg name="port" value="/dev/rplidar1" />
-            <arg name="scan_topic" value="/scan" />
-            <arg name="frame_id" value="base_link" />
+    <!-- UART Devices -->
+    <group if="$(arg spawn_uart_device)">
+        <include file="$(find msd700_hardware)/launch/spawn_uart_device.launch">
+            <arg name="lidar_count" value="$(arg lidar_count)" />
         </include>
     </group>
-
-    <group if="$(eval int(arg('lidar_count')) == 2)">
-        <!-- RPLidar 1 -->
-        <include file="$(find msd700_hardware)/launch/lidar_scanner.launch">
-            <arg name="name" value="rplidar1_node" />
-            <arg name="port" value="/dev/rplidar1" />
-            <arg name="scan_topic" value="/scan1" />
-            <arg name="frame_id" value="base_link" />
-        </include>
-        <!-- RPLidar 2 -->
-        <include file="$(find msd700_hardware)/launch/lidar_scanner.launch">
-            <arg name="name" value="rplidar2_node" />
-            <arg name="port" value="/dev/rplidar2" />
-            <arg name="scan_topic" value="/scan2" />
-            <arg name="frame_id" value="base_link" />
-        </include>
-    </group>
-
-    <!-- Odometry -->
-    <include file="$(find msd700_hardware)/launch/odometry.launch">
-        <arg name="config_file"       value="$(arg odom_config)" />
-    </include>
 
     <!-- Hardware interface -->
     <include file="$(find msd700_hardware)/launch/hardware_interface.launch" />

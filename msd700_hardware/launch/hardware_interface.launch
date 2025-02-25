@@ -1,3 +1,8 @@
 <launch>
-    <node pkg="msd700_control" type="msd700_hw_interface" name="msd700_hw_interface" output="screen" ns="msd700_prototype" />
+    <!-- Argument -->
+    <arg name="config_file" default="$(find msd700_hardware)/config/msd700_odometry.yaml" />
+    <rosparam command="load" file="$(arg config_file)" />
+
+    <!-- Hardware interface -->
+    <node pkg="msd700_hardware" type="msd700_hw_interface" name="msd700_hw_interface" output="screen" ns="msd700_prototype" />
 </launch>

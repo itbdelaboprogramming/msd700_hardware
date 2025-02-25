@@ -46,11 +46,13 @@ class MSD700HWInterface : public hardware_interface::RobotHW {
 public:
     MSD700HWInterface(ros::NodeHandle nh) : nh_(nh) {
         // Pamameters
-        nh_.param("encoder_ppr", encoder_ppr_, 2048.0);
-        nh_.param("wheel_distance", wheel_distance_, 0.5);
-        nh_.param("wheel_radius", wheel_radius_, 0.1);
-        nh_.param("compute_period", compute_period_, 0.1);
-        nh_.param("use_imu", use_imu_, false);
+        nh_.param("/msd700_odom/encoder_ppr", encoder_ppr_, 2048.0);
+        nh_.param("/msd700_odom/wheel_distance", wheel_distance_, 0.5);
+        nh_.param("/msd700_odom/wheel_radius", wheel_radius_, 0.1);
+        nh_.param("/msd700_odom/compute_period", compute_period_, 10.0);
+        nh_.param("/msd700_odom/use_imu", use_imu_, true);
+        wheel_distance_ /= 100.0;
+        wheel_radius_ /= 100.0;
 
         // Register joint state interface
         // This handles the current state of the robot.
@@ -97,7 +99,7 @@ public:
         odom_pub_               = nh_.advertise<nav_msgs::Odometry>("/odom", 10);
         // Subscriber
         motor_pulse_sub_        = nh_.subscribe("/hardware/motor_pulse", 10, &MSD700HWInterface::motor_pulse_callback, this);
-        imu_sub_                = nh_.subscribe("/hardware/imu", 10, &MSD700HWInterface::imu_callback, this);
+        imu_sub_                = nh_.subscribe("/imu/data_raw", 10, &MSD700HWInterface::imu_callback, this);
 
     }
 
@@ -157,6 +159,7 @@ public:
     }
 
     void publish_odom() {
+
         ros::Time now = ros::Time::now();
         nav_msgs::Odometry odom;
         odom.header.stamp = now;
@@ -178,8 +181,12 @@ public:
         odom_pub_.publish(odom);
 
         tf_broadcaster_.sendTransform(
-            tf::StampedTransform(tf::Transform(q, tf::Vector3(odom_state_.x, odom_state_.y, 0.0)),
-                                 now, "odom", "base_link"));
+            tf::StampedTransform(
+                tf::Transform(tf::Quaternion(q.x(), q.y(), q.z(), q.w()), tf::Vector3(odom_state_.x, odom_state_.y, 0.0)),
+                now, "odom", "base_link"));
+
+        // Debug 
+        // ROS_INFO("x: %f, y: %f, theta: %f", odom_state_.x, odom_state_.y, odom_state_.theta);
     }
 
     void publish_hardware_command(int move, int cam, double left_rpm, double right_rpm){
@@ -223,7 +230,7 @@ public:
             imu_state_.rpy[0] = 0.98 * gyro_roll  + 0.02 * accel_roll;
             imu_state_.rpy[1] = 0.98 * gyro_pitch + 0.02 * accel_pitch;
             imu_state_.rpy[2] = gyro_yaw;
-            odom_state_.theta = imu_state_.rpy[2];
+            odom_state_.theta += imu_state_.rpy[2];
         }else{
             d_theta = (d_right - d_left) / wheel_distance_;
             odom_state_.theta += d_theta;
@@ -300,7 +307,7 @@ int main(int argc, char **argv) {
     spinner.start();
 
     // Set an update frequency (e.g., 50 Hz)
-    ros::Rate loop_rate(50);
+    ros::Rate loop_rate(10);
     ros::Time last_time = ros::Time::now();
 
     while (ros::ok())
