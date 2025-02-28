@@ -11,7 +11,7 @@
             <arg name="name" value="rplidar_node" />
             <arg name="port" value="/dev/rplidar1" />
             <arg name="scan_topic" value="/scan" />
-            <arg name="frame_id" value="base_link" />
+            <arg name="frame_id" value="lidar_link" />
         </include>
     </group>
 
