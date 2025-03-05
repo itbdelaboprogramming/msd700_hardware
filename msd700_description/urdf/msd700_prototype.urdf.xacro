@@ -45,17 +45,13 @@
         <material>Gazebo/Grey</material>
     </gazebo>
 
-    <xacro:include filename="$(find msd700_description)/urdf/gazebo/msd700_prototype.gazebo.xacro"/>
+    <xacro:include filename="$(find msd700_description)/urdf/control/msd700_prototype_control.xacro"/>
 
     <xacro:add_wheel prefix="bl_wheel" radius="${wheel_radius}" thickness="${wheel_width}" xyz="-${chassis_length/2} ${chassis_width/2 + wheel_width/2} -${chassis_height/2}" parent="chassis_link"/>
     <xacro:add_wheel prefix="br_wheel" radius="${wheel_radius}" thickness="${wheel_width}" xyz="-${chassis_length/2} -${chassis_width/2 + wheel_width/2} -${chassis_height/2}" parent="chassis_link"/>
-    <!-- <xacro:add_wheel prefix="mid_wheel" radius="${wheel_radius}" thickness="${wheel_width}" xyz="${chassis_length/2} 0 -${chassis_height/2}" parent="chassis_link"/> -->
-    <xacro:add_wheel prefix="fr_wheel" radius="${wheel_radius}" thickness="${wheel_width}" xyz="${chassis_length/2} -${chassis_width/2 + wheel_width/2} -${chassis_height/2}" parent="chassis_link"/>
-    <xacro:add_wheel prefix="fl_wheel" radius="${wheel_radius}" thickness="${wheel_width}" xyz="${chassis_length/2} ${chassis_width/2 + wheel_width/2} -${chassis_height/2}" parent="chassis_link"/>
+    <xacro:add_caster_wheel prefix="fl_wheel" radius="${wheel_radius}" thickness="${wheel_width}" xyz="${chassis_length/2} ${chassis_width/2 + wheel_width/2} -${chassis_height/2}" parent="chassis_link"/>
+    <xacro:add_caster_wheel prefix="fr_wheel" radius="${wheel_radius}" thickness="${wheel_width}" xyz="${chassis_length/2} -${chassis_width/2 + wheel_width/2} -${chassis_height/2}" parent="chassis_link"/>
 
-    <xacro:add_2d_lidar prefix="lidar" topic="scan" parent="chassis_link" x="0" y="0" z="${chassis_height/2}" rpy="0 0 0"/>
-
-    <!-- <xacro:add_imu prefix="imu" topic="imu" parent="chassis_link" xyz="0 0 0.02" rpy="0 0 0"/> -->
-    
+    <xacro:add_2d_lidar prefix="lidar" topic="/msd700/sensors/scan" parent="chassis_link" x="0" y="0" z="${chassis_height/2}" rpy="0 0 0"/>
 
 </robot>

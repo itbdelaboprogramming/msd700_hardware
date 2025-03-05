@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<robot xmlns="http://www.ros.org/wiki/urdf" name="msd700_prototype_control">
+
+    <gazebo>
+        <!-- 
+        This plugins acts as hardware_interface and controller_manager in Gazebo.
+        -->
+        <plugin name="gazebo_ros_diff_drive" filename="libgazebo_ros_diff_drive.so">
+            <!-- <ros> -->
+                <!-- Namespace -->
+            <!-- </ros> -->
+            <robotNamespace>/msd700</robotNamespace>
+
+            <updateRate>50</updateRate>
+
+            <!-- Wheels -->
+            <leftJoint>bl_wheel_joint</leftJoint>
+            <rightJoint>br_wheel_joint</rightJoint>
+
+            <!-- Kinematics -->
+            <wheelSeparation>0.2</wheelSeparation>
+            <wheelDiameter>0.108</wheelDiameter>
+            <wheelAcceleration>2.0</wheelAcceleration>
+            <wheelTorque>10</wheelTorque>
+            
+            <!-- Input -->
+            <commandTopic>/msd700/control/cmd_vel</commandTopic>
+
+            <!-- Output -->
+            <publishTf>true</publishTf>
+            <publishOdomTF>true</publishOdomTF>
+            <publishWheelTF>false</publishWheelTF>
+            <publishWheelJointState>true</publishWheelJointState>
+
+            <!-- Odometry -->
+            <odometryTopic>/msd700/sensors/odom</odometryTopic>
+            <odometryFrame>/odom</odometryFrame>
+            <odometrySource>world</odometrySource>
+            <robotBaseFrame>base_link</robotBaseFrame>
+
+            <!-- Debug -->
+            <rosDebugLevel>na</rosDebugLevel>
+
+
+        </plugin>
+    </gazebo>
+
+</robot>
