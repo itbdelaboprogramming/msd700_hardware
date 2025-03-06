@@ -1,14 +1,15 @@
 <launch>
     <arg name="port" default="/dev/arduino"/>
     <arg name="baud" default="57600"/>
+    <arg name="namespace" default="msd700" />
 
     <!-- Serial Communication with Firmware -->
-    <node pkg="rosserial_python" type="serial_node.py" name="serial_node" respawn="true" output="screen">
+    <node pkg="rosserial_python" type="serial_node.py" name="serial_node" respawn="true" output="screen" ns="$(arg namespace)">
         <param name="port" value="$(arg port)"/>
         <param name="baud" value="$(arg baud)"/>
     </node>
 
     <!-- Hardware State Parser -->
-    <node pkg="msd700_hardware" type="hardware_state_node.py" name="hardware_state_node" output="screen" />
+    <node pkg="msd700_hardware" type="hardware_state_node.py" name="hardware_state_node" output="screen" ns="$(arg namespace)"/>
 
 </launch>

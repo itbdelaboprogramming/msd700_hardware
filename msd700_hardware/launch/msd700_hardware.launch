@@ -10,27 +10,33 @@ This launch file contains the following:
 <launch>
     <!-- Parameters -->
     <arg name="odom_config"     default="$(find msd700_hardware)/config/msd700_odometry.yaml" />
+    <arg name="namespace"       default="msd700" />
     <arg name="xacro_path"      default="$(find msd700_description)/urdf/msd700_prototype.urdf.xacro" />
 
     <arg name="use_rviz"        default="false" />          <!-- Use RViz -->
     <arg name="lidar_count"     default="1" />              <!-- Lidar count -->
 
-    <arg name="spawn_uart_device"      default="true" />           <!-- Spawn UART --> 
+    <arg name="spawn_uart_device"   default="false" />           <!-- Spawn UART --> 
 
     <!-- UART Devices -->
     <group if="$(arg spawn_uart_device)">
         <include file="$(find msd700_hardware)/launch/spawn_uart_device.launch">
             <arg name="lidar_count" value="$(arg lidar_count)" />
+            <arg name="namespace"   value="$(arg namespace)" />
         </include>
     </group>
 
     <!-- Hardware interface -->
-    <include file="$(find msd700_hardware)/launch/hardware_interface.launch" />
+    <include file="$(find msd700_hardware)/launch/hardware_interface.launch">
+        <arg name="config_file" value="$(arg odom_config)" />
+        <arg name="namespace"   value="$(arg namespace)" />
+    </include>
+
 
     <!-- Add robot description urdf to parameter server -->
     <param name="robot_description" command="$(find xacro)/xacro $(arg xacro_path)" />
     <!-- Robot state publisher -->
-    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" ns="$(arg namespace)" />
 
     <!-- RVIZ -->
     <group if="$(arg use_rviz)">

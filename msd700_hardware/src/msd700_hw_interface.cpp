@@ -59,12 +59,12 @@ public:
         // We can update these values in the read() function.
         hardware_interface::JointStateHandle bl_handle("bl_wheel_joint", &pos_[0], &vel_[0], &eff_[0]);
         hardware_interface::JointStateHandle br_handle("br_wheel_joint", &pos_[1], &vel_[1], &eff_[1]);
-        hardware_interface::JointStateHandle fr_handle("fr_wheel_joint", &pos_[2], &vel_[2], &eff_[2]);
-        hardware_interface::JointStateHandle fl_handle("fl_wheel_joint", &pos_[3], &vel_[3], &eff_[3]);
+        // hardware_interface::JointStateHandle fl_handle("fl_wheel_joint", &pos_[2], &vel_[2], &eff_[2]);
+        // hardware_interface::JointStateHandle fr_handle("fr_wheel_joint", &pos_[3], &vel_[3], &eff_[3]);
         jnt_state_interface.registerHandle(bl_handle);
         jnt_state_interface.registerHandle(br_handle);
-        jnt_state_interface.registerHandle(fl_handle);
-        jnt_state_interface.registerHandle(fr_handle);
+        // jnt_state_interface.registerHandle(fl_handle);
+        // jnt_state_interface.registerHandle(fr_handle);
         registerInterface(&jnt_state_interface);
 
         // Register joint velocity interface
@@ -72,12 +72,12 @@ public:
         // We can convert these commands to actual motor commands in the write() function.
         hardware_interface::JointHandle bl_vel_handle(jnt_state_interface.getHandle("bl_wheel_joint"), &cmd_[0]);
         hardware_interface::JointHandle br_vel_handle(jnt_state_interface.getHandle("br_wheel_joint"), &cmd_[1]);
-        hardware_interface::JointHandle fl_vel_handle(jnt_state_interface.getHandle("fl_wheel_joint"), &cmd_[2]);
-        hardware_interface::JointHandle fr_vel_handle(jnt_state_interface.getHandle("fr_wheel_joint"), &cmd_[3]);
+        // hardware_interface::JointHandle fl_vel_handle(jnt_state_interface.getHandle("fl_wheel_joint"), &cmd_[2]);
+        // hardware_interface::JointHandle fr_vel_handle(jnt_state_interface.getHandle("fr_wheel_joint"), &cmd_[3]);
         jnt_vel_interface.registerHandle(bl_vel_handle);
         jnt_vel_interface.registerHandle(br_vel_handle);
-        jnt_vel_interface.registerHandle(fl_vel_handle);
-        jnt_vel_interface.registerHandle(fr_vel_handle);
+        // jnt_vel_interface.registerHandle(fl_vel_handle);
+        // jnt_vel_interface.registerHandle(fr_vel_handle);
         registerInterface(&jnt_vel_interface);
 
         // Initialize Joint States
@@ -95,11 +95,11 @@ public:
         pulse2rad_ = 2.0 * M_PI / encoder_ppr_;
 
         // Publisher
-        hardware_command_pub_   = nh_.advertise<msd700_msgs::HardwareCommand>("/hardware_command", 10);
-        odom_pub_               = nh_.advertise<nav_msgs::Odometry>("/odom", 10);
+        hardware_command_pub_   = nh_.advertise<msd700_msgs::HardwareCommand>("hardware_command", 10);
+        odom_pub_               = nh_.advertise<nav_msgs::Odometry>("sensors/odom", 10);
         // Subscriber
-        motor_pulse_sub_        = nh_.subscribe("/hardware/motor_pulse", 10, &MSD700HWInterface::motor_pulse_callback, this);
-        imu_sub_                = nh_.subscribe("/imu/data_raw", 10, &MSD700HWInterface::imu_callback, this);
+        motor_pulse_sub_        = nh_.subscribe("sensors/motor_pulse", 10, &MSD700HWInterface::motor_pulse_callback, this);
+        imu_sub_                = nh_.subscribe("sensors/imu", 10, &MSD700HWInterface::imu_callback, this);
 
     }
 

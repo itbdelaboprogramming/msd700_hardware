@@ -32,13 +32,13 @@ class HardwareStateParser:
         self.az_offset = 0.0
 
         # Publisher
-        self.imu_raw_pub        = rospy.Publisher('/imu/data_raw'           , Imu               , queue_size=10)
-        self.mag_pub            = rospy.Publisher('/imu/mag'                , MagneticField     , queue_size=10)
-        self.motor_pulse_pub    = rospy.Publisher('/hardware/motor_pulse'   , Float32MultiArray , queue_size=10)
-        self.uwb_pub            = rospy.Publisher('/hardware/uwb'           , Float32MultiArray , queue_size=10)
+        self.imu_raw_pub        = rospy.Publisher('sensors/imu'           , Imu               , queue_size=10)
+        self.mag_pub            = rospy.Publisher('sensors/mag'           , MagneticField     , queue_size=10)
+        self.motor_pulse_pub    = rospy.Publisher('sensors/motor_pulse'   , Float32MultiArray , queue_size=10)
+        self.uwb_pub            = rospy.Publisher('sensors/uwb'           , Float32MultiArray , queue_size=10)
 
         # Subscriber
-        self.hardware_state_sub = rospy.Subscriber('/hardware_state', HardwareState, self.hardware_state_callback, queue_size=10)
+        self.hardware_state_sub = rospy.Subscriber('hardware_state', HardwareState, self.hardware_state_callback, queue_size=10)
 
     def hardware_state_callback(self, msg: HardwareState) -> None:
         # Update raw values

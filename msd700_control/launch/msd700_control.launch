@@ -2,6 +2,7 @@
     <!-- Arguments -->
     <arg name="controller_config" default="$(find msd700_control)/config/msd700_controllers.yaml" />
     <arg name="gazebo_controller_config" default="$(find msd700_control)/config/msd700_gazebo_controllers.yaml" />
+    <arg name="namespace" default="msd700" />
     
     <!-- Load Controller Configurations-->
     <rosparam file="$(arg controller_config)" command="load" />
@@ -9,6 +10,6 @@
 
     <!-- Spawn diff_drive_controller -->
     <node pkg="controller_manager" type="spawner" name="spawner"
-        args="joint_state_controller diff_drive_controller" output="screen" ns="msd700_prototype">
+        args="joint_state_controller diff_drive_controller" output="screen" ns="$(arg namespace)">
     </node>
 </launch>

@@ -81,7 +81,7 @@ class OdomTuneNode:
         self.gui = OdomTuneGUI(tk.Tk(), self.current_ppr)
 
         # Subscriber
-        self.odom_sub = rospy.Subscriber('/odom', Odometry, self.odom_callback)
+        self.odom_sub = rospy.Subscriber('/sensors/odom', Odometry, self.odom_callback)
 
     
     def odom_callback(self, msg: Odometry) -> None:

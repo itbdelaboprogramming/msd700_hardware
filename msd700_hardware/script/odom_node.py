@@ -21,7 +21,7 @@ class OdomNode:
         self.odom_broadcaster   = tf.TransformBroadcaster()
 
         # Subscriber
-        self.imu_sub            = rospy.Subscriber('/imu/data_raw', Imu, self.imu_callback)
+        self.imu_sub            = rospy.Subscriber('/hardware/imu', Imu, self.imu_callback)
         self.motor_pulse_sub    = rospy.Subscriber('/hardware/motor_pulse', Float32MultiArray, self.motor_pulse_callback)
 
         # Publisher

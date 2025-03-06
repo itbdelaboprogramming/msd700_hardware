@@ -1,12 +1,12 @@
-msd700_prototype:
+msd700:
   joint_state_controller:
     type: "joint_state_controller/JointStateController"
     publish_rate: 50
 
   diff_drive_controller:
     type        : "diff_drive_controller/DiffDriveController"
-    left_wheel  : ['bl_wheel_joint', 'fl_wheel_joint']
-    right_wheel : ['br_wheel_joint', 'fr_wheel_joint']
+    left_wheel  : ['bl_wheel_joint']
+    right_wheel : ['br_wheel_joint']
     publish_rate: 50.0               # default: 50
     pose_covariance_diagonal : [0.001, 0.001, 1000000.0, 1000000.0, 1000000.0, 1000.0]
     twist_covariance_diagonal: [0.001, 0.001, 1000000.0, 1000000.0, 1000000.0, 1000.0]
