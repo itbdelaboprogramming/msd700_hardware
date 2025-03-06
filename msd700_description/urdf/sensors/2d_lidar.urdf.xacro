@@ -49,7 +49,7 @@ Include this file and make a joint between laser_frame and your link.
                     </scan>
                     <range>
                         <min>0.08</min>
-                        <max>12.0</max>
+                        <max>30.0</max>
                     </range>
                     <noise>
                         <type>gaussian</type>
